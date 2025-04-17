@@ -48,4 +48,4 @@ def secondary_calculation(arg) :
 
 res1 = priority_calculation(sys.argv[1].split())
 res2 = secondary_calculation(res1)
-print(res2)
+print("Résultat:", res2)
