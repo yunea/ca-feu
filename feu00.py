@@ -31,37 +31,26 @@ def display(rectangle) :
     print(item)
 
 
-def check_argv(argv_list):
-    """
-    Vérifie que les arguments sont valides :
-    - exactement 2 arguments (en plus du nom du script)
-    - entiers strictement positifs
-    Retourne (True, "") si OK, sinon (False, message d'erreur)
-    """
-    if len(argv_list) != 3:
-        return False, "Error: must have 2 arguments"
+def parse_args(argv):
+  if len(argv) != 3:
+      raise ValueError("Must provide exactly 2 arguments")
+    
+  width = int(argv[1])
+  height = int(argv[2])
 
-    try:
-        width = int(argv_list[1])
-        height = int(argv_list[2])
-    except ValueError:
-        return False, "Error: arguments must be integers"
+  if width <= 0 or height <= 0:
+      raise ValueError("Arguments must be greater than 0")
 
-    if width <= 0 or height <= 0:
-        return False, "Error: arguments must be greater than 0"
-
-    return True, ""
+  return width, height
   
 
 def main() :
-  good_args, error_message = check_argv(sys.argv)
-  if good_args : 
-    width = int(sys.argv[1])
-    height = int(sys.argv[2])
+  try:
+    width, height = parse_args(sys.argv)
     rectangle = list_rectangle(width, height)
     display(rectangle)
-  else :
-    print(error_message)
+  except Exception as e:
+    print(f"Error: {e}")
 
 
 
