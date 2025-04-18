@@ -5,22 +5,30 @@
 import sys
 
 # Transforme une liste de chaînes en float ou conserve les opérateurs
-def str_to_tokens(elements):
-    tokens = []
-    for elem in elements:
-        if elem in ["*", "/", "%", "+", "-", "(", ")"]:
-            tokens.append(elem)
-        else:
-            tokens.append(float(elem))
-    return tokens
+def str_to_tokens(input_expr):
+  elements = input_expr.replace(" ", "")
+  tokens = []
+  num = ""
+  for elem in elements:
+    if elem in "+-*/%()":
+      if num.isdigit() :
+        tokens.append(float(num))
+        num = ""
+      tokens.append(elem)
+    elif elem.isdigit() or elem == "." :
+      num += elem
+    else:
+      raise ValueError(f"Caractère non reconnu : {elem}")
+  if num : tokens.append(float(num))
+  return tokens
 
 # Calcule l'opération entre deux nombres
 def handle_operation(op, num1, num2):
-    if op == "*": return num1 * num2
-    elif op == "/": return num1 / num2
-    elif op == "%": return num1 % num2
-    elif op == "+": return num1 + num2
-    elif op == "-": return num1 - num2
+  if op == "*": return num1 * num2
+  elif op == "/": return num1 / num2
+  elif op == "%": return num1 % num2
+  elif op == "+": return num1 + num2
+  elif op == "-": return num1 - num2
 
 # Gère *, / et %
 def priority_operation(tokens):
@@ -70,7 +78,8 @@ def evaluate(tokens):
 # Lancement du programme
 def main():
     input_expr = sys.argv[1]
-    token_list = str_to_tokens(input_expr.split())
+    token_list = str_to_tokens(input_expr)
+    print(token_list)
     result = evaluate(token_list)
     print(result)
 
