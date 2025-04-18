@@ -10,16 +10,30 @@ def str_to_tokens(input_expr):
   tokens = []
   num = ""
   for elem in elements:
-    if elem in "+-*/%()":
-      if num.isdigit() :
-        tokens.append(float(num))
-        num = ""
-      tokens.append(elem)
-    elif elem.isdigit() or elem == "." :
-      num += elem
+    if elem in "/*%-+()." or elem.isdigit():  # On autorise les opérateurs et chiffres
+      if elem in "+-*/%()":  # Si on rencontre un opérateur
+        if num:  # Si num n'est pas vide, on ajoute le nombre précédant l'opérateur
+          tokens.append(float(num))
+          num = ""  # Réinitialiser le num après avoir ajouté
+          tokens.append(elem)  # Ajouter l'opérateur
+        elif elem == ".":  # Si on rencontre un point décimal
+          if num and num.count(".") == 0:  # Vérifier qu'il n'y a pas déjà un point dans num
+            num += elem
+          else:
+            raise ValueError("Erreur : Le nombre contient plusieurs points décimaux.")
+        else : 
+          tokens.append(elem)
+      else:  # Ajoute les chiffres à num
+        num += elem
     else:
-      raise ValueError(f"Caractère non reconnu : {elem}")
-  if num : tokens.append(float(num))
+      raise ValueError(f"Caractère non reconnu : '{elem}'. Seuls les opérateurs et les chiffres sont autorisés.")
+    
+  # Après la boucle, s'il y a un numéro restant dans num, on l'ajoute à tokens
+  if num:
+    try:
+      tokens.append(float(num))  # Essayer de convertir num en float
+    except ValueError:
+      raise ValueError(f"Erreur : '{num}' n'est pas un nombre valide.")
   return tokens
 
 # Calcule l'opération entre deux nombres
@@ -79,7 +93,6 @@ def evaluate(tokens):
 def main():
     input_expr = sys.argv[1]
     token_list = str_to_tokens(input_expr)
-    print(token_list)
     result = evaluate(token_list)
     print(result)
 
