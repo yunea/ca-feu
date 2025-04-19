@@ -16,9 +16,13 @@ def build_display_grid(board, to_find, start_i, start_j) :
   for i in range(len(new_board)) :
     for j in range(len(new_board[0])) : 
       if i == start_i and j == start_j : 
-        new_board[i][j] = to_find[0][0]
+        for di in range(len(to_find)) : 
+          for dj in range(len(to_find[0])) : 
+            if to_find[di][dj] != " ":
+              new_board[i+di][j+dj] = to_find[di][dj]
 
-  print(new_board)
+  for line in new_board : 
+    print(*line)
 
 
 def match_form(board, to_find, i, j) :
@@ -35,21 +39,13 @@ def match_found(board, to_find) :
     for j in range(len(board[0])) : # columns
       if match_form(board, to_find, i, j) : 
         build_display_grid(board, to_find, i, j)
-        return f"Match found at {i}, {j}"
-  return f"Not found"
+        return f"Trouvé !\nCoordonnées : {i}, {j}"
+  return f"Introuvable"
 
 def main() : 
-  board = [[0,0,0,0],[1,1,1,2],[2,3,3,4]]
-  to_find = [[1,1], [ 3,3]]
+  board = [[0,0,0,0],[1,1,1,1],[2,3,3,1]]
+  to_find = [[1, 1], [" ", 1]]
   unfindable = [[0,0], [0,0]]
-
-  print("-------------")
-  for line in board : 
-    print(*line)
-  print("-------------")
-  for line in to_find : 
-    print(*line)
-  print("-------------")
 
   print(match_found(board, to_find))
 
