@@ -96,4 +96,5 @@ def main():
     result = evaluate(token_list)
     print(result)
 
-main()
+if __name__ == "__main__":
+  main()

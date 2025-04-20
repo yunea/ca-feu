@@ -5,7 +5,7 @@ import sys, os
 
 def print_board(board) : 
   for line in board : 
-    print(*line)
+    print("".join(line))
 
 
 def build_display_grid(board, to_find, start_i, start_j) : 
@@ -71,4 +71,5 @@ def main() :
     print(f"Introuvable")
 
 
-main()
+if __name__ == "__main__":
+  main()
