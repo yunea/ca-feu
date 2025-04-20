@@ -18,7 +18,7 @@ def read_file(f_name):
 	board = []
 	with open(f_name, "r") as f:
 		for line in f:
-			board.append([c for c in line if c != '\n'])
+			board.append([c for c in line.strip()])
 	return board
 
 
@@ -32,45 +32,59 @@ def get_file_name() :
 	return sys.argv[1]
 
 def is_file_data_valid(file) :
-
 	# Vérifie que la première ligne suit le format : "5.xo"
-  match = re.match(r"(\d+)(.)(.)(.)$", file[0])
-  if not match : return False
+	s = ''.join(file[0])
+	print(s)
+	match = re.match(r"(\d+)(.)(.)(.)$", s)
+	if not match : 
+		print("Error: wrong data in first line")
+		return False
 	
 	# Extraire les valeurs après validation
-  nb_lines = int(match.group(1))  # Nombre de lignes du plateau
-  empty_char = match.group(2)  # Caractère pour vide
-  obstacle_char = match.group(3)  # Caractère pour obstacle
-  full_char = match.group(4)  # Caractère pour plein
-	
+	nb_lines = int(match.group(1))  # Nombre de lignes du plateau
+	empty_char = match.group(2)  # Caractère pour vide
+	obstacle_char = match.group(3)  # Caractère pour obstacle
+	full_char = match.group(4)  # Caractère pour plein
+
 	# Vérifie qu'il y a bien nb_lines lignes restantes dans le plateau
-  if len(file[1:]) != nb_lines : return False
+	if len(file[1:]) != nb_lines :
+		print("Error: line length incorrect")
+		return False
 
   # Vérifie que toutes les lignes ont la même largeur
-  width = len(file[1])  # Largeur de la première ligne du plateau
-  for line in file[1:]:
-    if len(line) != width:
-      return False
-  # Vérifie que tous les caractères dans la ligne sont valides
-    for c in line:
-      if c not in (empty_char, obstacle_char, full_char):
-        return False
+	width = len(file[1])  # Largeur de la première ligne du plateau
+	for line in file[1:]:
+		if len(line) != width:
+			print("Error: all lines does not have same size")
+			return False
 			
-  return True
+	# Vérifie que tous les caractères dans la ligne sont valides
+		for c in line:
+			if c not in (empty_char, obstacle_char, full_char):
+				print("Error: unknown char in file")
+				return False
+	
+	return True
 
 
 def extract_data(file) : 
-	data = file[0]
+
+	if not is_file_data_valid(file) :
+		print(f"Error : file content not valid")
+		sys.exit()
+
+	s = ''.join(file[0])
+	match = re.match(r"(\d+)(.)(.)(.)$", s)
 	file.pop(0)
-	return data[0], data[1], data[2], data[3], file
+	return int(match.group(1)), match.group(2), match.group(3), match.group(4), file
 
 
 def main() : 
 	f_board = get_file_name()
 	file = read_file(f_board)
-
-	lines, empty_char, obstacle_char, filled_char, board = extract_data(file)
 	print_board(file)
+	lines, empty_char, obstacle_char, filled_char, board = extract_data(file)
+	
 
 
 if __name__ == "__main__":

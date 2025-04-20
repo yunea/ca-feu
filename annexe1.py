@@ -13,8 +13,8 @@ density = int(sys.argv[2 + 1])
 
 print(f"{y}.xo")
 
-for i in range(y + 1):
-    for j in range(x + 1):
+for i in range(y):  # Modifié de y + 1 à y
+    for j in range(x):  # Modifié de x + 1 à x
         char = 'x' if random.randint(0, y - 1) * 2 < density else '.'
         print(char, end='')
     print()
