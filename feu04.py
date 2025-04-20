@@ -11,15 +11,15 @@ import sys, os, re
 
 def print_board(board) : 
 	for line in board : 
-		print("".join(line))
+		print("".join(str(c) for c in line))
 
 
 def read_file(f_name):
-	board = []
+	raw_data = []
 	with open(f_name, "r") as f:
 		for line in f:
-			board.append([c for c in line.strip()])
-	return board
+			raw_data.append([c for c in line.strip()])
+	return raw_data
 
 
 def get_file_name() : 
@@ -34,7 +34,6 @@ def get_file_name() :
 def is_file_data_valid(file) :
 	# Vérifie que la première ligne suit le format : "5.xo"
 	s = ''.join(file[0])
-	print(s)
 	match = re.match(r"(\d+)(.)(.)(.)$", s)
 	if not match : 
 		print("Error: wrong data in first line")
@@ -75,16 +74,63 @@ def extract_data(file) :
 
 	s = ''.join(file[0])
 	match = re.match(r"(\d+)(.)(.)(.)$", s)
-	file.pop(0)
-	return int(match.group(1)), match.group(2), match.group(3), match.group(4), file
+	return match.group(2), match.group(3), match.group(4), file[1:]
+
+def is_empty(board, i, j, empty_char) : 
+	if board[i][j] == empty_char : 
+		return True
+	return False
+
+
+def get_dp(board, obstacle_char, empty_char) :
+	dp = []
+	for row in board : 
+		line = []
+		for _ in row : 
+			line.append(0)
+		dp.append(line)
+
+	for i in range(len(board)) : 
+		for j in range(len(board[0])) : 
+			if board[i][j] == obstacle_char:
+				dp[i][j] = 0
+			elif i == 0 or j == 0:
+				dp[i][j] = 1
+			else:	
+				dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+	return dp
+
+
+def get_max(dp) :
+	i_max = 0
+	j_max = 0
+	for i in range(len(dp)) : 
+		for j in range(len(dp[0])) : 
+			if dp[i][j] > dp[i_max][j_max] : 
+				i_max = i
+				j_max = j
+
+	return i_max, j_max, dp[i_max][j_max]
+
+
+def get_new_board(i_max, j_max, v_max, board, full_char) :
+	for i in range(v_max) :
+		for j in range(v_max) :
+			board[i_max-i][j_max-j] = full_char
+	return board
 
 
 def main() : 
 	f_board = get_file_name()
 	file = read_file(f_board)
-	print_board(file)
-	lines, empty_char, obstacle_char, filled_char, board = extract_data(file)
+
+	empty_char, obstacle_char, full_char, board = extract_data(file)
 	
+	dp = get_dp(board, obstacle_char, empty_char)
+	i_max, j_max, v_max = get_max(dp)
+	result = get_new_board(i_max, j_max, v_max, board, full_char)
+	
+	print_board(result)
 
 
 if __name__ == "__main__":
