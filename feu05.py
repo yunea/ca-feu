@@ -19,6 +19,9 @@ def check_arguments(args):
     if len(args) != 2:
         print(f"Error: 1 argument needed")
         sys.exit()
+    if not os.path.exists(sys.argv[1]):
+        print(f"Erreur : Le fichier {sys.argv[1]} n'existe pas.")
+        sys.exit()
     if not os.path.isfile(args[1]):
         print(f"Error: {args[1]} is not a file")
         sys.exit()
