@@ -36,8 +36,8 @@ def read_file(f_name):
 # Analyse les données du fichier et extrait les infos utiles
 def get_data(content):
     # Extraire la première ligne
-    s = "".join(content[0])
-    match = re.match(r"^(\d+)x(\d+)(.{5})$", s)
+    header_line = "".join(content[0])
+    match = re.match(r"^(\d+)x(\d+)(.{5})$", header_line)
     # Valider les arguments de la première ligne
     if not match:
         print("Error: wrong data in first line.")
