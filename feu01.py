@@ -4,45 +4,63 @@
 
 import sys
 
+
 # Transforme une liste de chaînes en float ou conserve les opérateurs
 def str_to_tokens(input_expr):
-  elements = input_expr.replace(" ", "")
-  tokens = []
-  num = ""
-  for elem in elements:
-    if elem in "/*%-+()." or elem.isdigit():  # On autorise les opérateurs et chiffres
-      if elem in "+-*/%()":  # Si on rencontre un opérateur
-        if num:  # Si num n'est pas vide, on ajoute le nombre précédant l'opérateur
-          tokens.append(float(num))
-          num = ""  # Réinitialiser le num après avoir ajouté
-          tokens.append(elem)  # Ajouter l'opérateur
-        elif elem == ".":  # Si on rencontre un point décimal
-          if num and num.count(".") == 0:  # Vérifier qu'il n'y a pas déjà un point dans num
-            num += elem
-          else:
-            raise ValueError("Erreur : Le nombre contient plusieurs points décimaux.")
-        else : 
-          tokens.append(elem)
-      else:  # Ajoute les chiffres à num
-        num += elem
-    else:
-      raise ValueError(f"Caractère non reconnu : '{elem}'. Seuls les opérateurs et les chiffres sont autorisés.")
-    
-  # Après la boucle, s'il y a un numéro restant dans num, on l'ajoute à tokens
-  if num:
-    try:
-      tokens.append(float(num))  # Essayer de convertir num en float
-    except ValueError:
-      raise ValueError(f"Erreur : '{num}' n'est pas un nombre valide.")
-  return tokens
+    elements = input_expr.replace(" ", "")
+    tokens = []
+    num = ""
+    for elem in elements:
+        if (
+            elem in "/*%-+()." or elem.isdigit()
+        ):  # On autorise les opérateurs et chiffres
+            if elem in "+-*/%()":  # Si on rencontre un opérateur
+                if (
+                    num
+                ):  # Si num n'est pas vide, on ajoute le nombre précédant l'opérateur
+                    tokens.append(float(num))
+                    num = ""  # Réinitialiser le num après avoir ajouté
+                    tokens.append(elem)  # Ajouter l'opérateur
+                elif elem == ".":  # Si on rencontre un point décimal
+                    if (
+                        num and num.count(".") == 0
+                    ):  # Vérifier qu'il n'y a pas déjà un point dans num
+                        num += elem
+                    else:
+                        raise ValueError(
+                            "Erreur : Le nombre contient plusieurs points décimaux."
+                        )
+                else:
+                    tokens.append(elem)
+            else:  # Ajoute les chiffres à num
+                num += elem
+        else:
+            raise ValueError(
+                f"Caractère non reconnu : '{elem}'. Seuls les opérateurs et les chiffres sont autorisés."
+            )
+
+    # Après la boucle, s'il y a un numéro restant dans num, on l'ajoute à tokens
+    if num:
+        try:
+            tokens.append(float(num))  # Essayer de convertir num en float
+        except ValueError:
+            raise ValueError(f"Erreur : '{num}' n'est pas un nombre valide.")
+    return tokens
+
 
 # Calcule l'opération entre deux nombres
 def handle_operation(op, num1, num2):
-  if op == "*": return num1 * num2
-  elif op == "/": return num1 / num2
-  elif op == "%": return num1 % num2
-  elif op == "+": return num1 + num2
-  elif op == "-": return num1 - num2
+    if op == "*":
+        return num1 * num2
+    elif op == "/":
+        return num1 / num2
+    elif op == "%":
+        return num1 % num2
+    elif op == "+":
+        return num1 + num2
+    elif op == "-":
+        return num1 - num2
+
 
 # Gère *, / et %
 def priority_operation(tokens):
@@ -50,11 +68,12 @@ def priority_operation(tokens):
     while i < len(tokens):
         if tokens[i] in ["*", "/", "%"]:
             result = handle_operation(tokens[i], tokens[i - 1], tokens[i + 1])
-            tokens = tokens[:i - 1] + [result] + tokens[i + 2:]
+            tokens = tokens[: i - 1] + [result] + tokens[i + 2 :]
             i = 0  # reset après modification de la liste
         else:
             i += 1
     return tokens
+
 
 # Gère + et -
 def secondary_operation(tokens):
@@ -62,11 +81,12 @@ def secondary_operation(tokens):
     while i < len(tokens):
         if tokens[i] in ["+", "-"]:
             result = handle_operation(tokens[i], tokens[i - 1], tokens[i + 1])
-            tokens = tokens[:i - 1] + [result] + tokens[i + 2:]
+            tokens = tokens[: i - 1] + [result] + tokens[i + 2 :]
             i = 0  # reset après modification
         else:
             i += 1
     return tokens
+
 
 # Remplace les sous-expressions entre parenthèses par leur résultat
 def evaluate_parentheses(tokens):
@@ -77,10 +97,11 @@ def evaluate_parentheses(tokens):
             if tokens[i] == "(":
                 open_idx = i
         close_idx = tokens.index(")")
-        sub_expr = tokens[open_idx + 1:close_idx]
+        sub_expr = tokens[open_idx + 1 : close_idx]
         result = evaluate(sub_expr)
-        tokens = tokens[:open_idx] + [result] + tokens[close_idx + 1:]
+        tokens = tokens[:open_idx] + [result] + tokens[close_idx + 1 :]
     return tokens
+
 
 # Fonction principale de calcul
 def evaluate(tokens):
@@ -89,6 +110,7 @@ def evaluate(tokens):
     tokens = secondary_operation(tokens)
     return tokens[0]
 
+
 # Lancement du programme
 def main():
     input_expr = sys.argv[1]
@@ -96,5 +118,6 @@ def main():
     result = evaluate(token_list)
     print(result)
 
+
 if __name__ == "__main__":
-  main()
+    main()
